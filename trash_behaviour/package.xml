@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>trash_behaviour</name>
+  <version>0.0.1</version>
+  <description>Decides what the robot does: FSM first (S1), behaviour tree after the 08/12 lecture, lidar safety stop.</description>
+  <maintainer email="trashrobotedge@users.noreply.github.com">TrashRobotEdge</maintainer>
+  <license>TODO</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

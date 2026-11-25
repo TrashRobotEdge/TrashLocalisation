@@ -1,0 +1,18 @@
+# How we work
+
+**Flow:** board → pick an issue → assign yourself → Status *In Progress* → branch → PR → merge → Status *Done*.
+- Board: https://github.com/orgs/TrashRobotEdge/projects/1. **Sprint** field = S0–S3, no sprint = backlog.
+- Branch from `main`: `<issue-number>-short-name` (e.g. `12-hsv-detector`).
+- Commits: small, imperative (`Add HSV detector node`).
+- PR description: what + **why**, and `Closes #N`. Reviews are encouraged (big PRs: someone from the other course side), not mandatory.
+- Labels: `setup` (tooling/structure) · `research` (find facts before deciding) · `decision` (ends with an ADR).
+
+**Every decision has a written "because".**
+- Decision → ADR in `docs/decisions/` (copy `0000-template.md`, next number).
+- Something broke → `docs/problems.md`: symptom → diagnosis → alternatives (the professor grades this).
+- Weekly → `docs/journal/sprint-N.md` (also our prep for the professor's review).
+
+**Never commit:** model files (`.pt .onnx .tflite .hef .blob`), datasets, rosbags, `build/ install/ log/`, Windows `Zone.Identifier` files.
+Big files go to GitHub Releases (or the shared drive) with a checksum and a download script.
+
+**Docs as you go:** docstrings in code, a paragraph in `docs/` when a piece works. The reports are assembled from these, not written from memory at the end.

@@ -1,0 +1,24 @@
+% Autonomous Systems: short report, ASSEMBLED AT THE END from docs/ (source of truth).
+% Each section says which doc it comes from. Build: latexmk -pdf main.tex
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{graphicx,booktabs,hyperref}
+\title{TrashLocalisation: a trash-seeking TurtleBot3 with an OAK-D Pro}
+\author{TrashRobotEdge}
+\date{January 2027}
+\begin{document}
+\maketitle
+
+\section{Objective and scope}            % docs/PROJECT_PLAN.md §1, §3 (scope ladder)
+\section{Robot extension: URDF and simulation} % §5, docs/decisions
+\section{Architecture and interfaces}    % docs/architecture.md, computation graph
+\section{Perception and localisation}    % §6, sensor fusion check
+\section{Behaviour: FSM, behaviour tree, Braitenberg approach} % §7
+\section{Mapping and navigation}         % SLAM + Nav2 (thin)
+\section{From simulation to the real robot} % §8, docs/problems.md
+\section{Results and demo}               % DEMO.md, videos
+\section{Problems and alternatives}      % docs/problems.md
+\section{Lectures covered}               % plan §1 table
+\section{Reproducibility}                % README, DEMO.md
+
+\end{document}
