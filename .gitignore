@@ -1,0 +1,31 @@
+# colcon
+build/
+install/
+log/
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+# large artefacts: GitHub Releases, never git
+*.pt
+*.onnx
+*.tflite
+*.hef
+*.har
+*.blob
+bags/
+*.db3
+*.mcap
+# LaTeX build files (the final PDF is committed on purpose at the end)
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+# OS / editor junk
+*Zone.Identifier
+.DS_Store
+.vscode/
