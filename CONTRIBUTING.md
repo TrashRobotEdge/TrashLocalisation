@@ -5,7 +5,8 @@
 - Branch from `main`: `<issue-number>-short-name` (e.g. `12-hsv-detector`).
 - Commits: small, imperative (`Add HSV detector node`).
 - PR description: what + **why**, and `Closes #N`. Reviews are encouraged (big PRs: someone from the other course side), not mandatory.
-- Labels: `setup` (tooling/structure) · `research` (find facts before deciding) · `decision` (ends with an ADR).
+- **Category** (board field): Setup · Build · Research · Decision (ends with an ADR) · Review prep (prepare a professor session) · Docs.
+- **Max 2–3 issues per person per sprint.** If it doesn't fit, it goes to the backlog.
 
 **Every decision has a written "because".**
 - Decision → ADR in `docs/decisions/` (copy `0000-template.md`, next number).
