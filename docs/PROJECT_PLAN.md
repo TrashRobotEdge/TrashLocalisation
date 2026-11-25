@@ -111,8 +111,8 @@ OAK-D Pro (RGB+depth) ─► trash_detector ─Detection2DArray─► trash_loca
 
 ## 8. Real robot
 - Robot config: **Pi4 + OAK-D Pro with on-camera inference**, **because** it leaves the Pi4 CPU for ROS/drivers and avoids powering a Pi5 + Hailo from the TB3 battery. Pi5 + Hailo = bench only (L1 replay).
-- `[W1]` checks: chassis ETA · which Docker image/OS the Pi4 runs · can the Pi4 USB power the OAK-D Pro (else powered hub/Y-cable) · depthai ROS driver on Humble.
-- No chassis by S2 → sim demo + bench video of the OAK pipeline. Decided now, not in panic later.
+- `[W1]` checks: which Docker image/OS the Pi4 runs · can the Pi4 USB power the OAK-D Pro (else powered hub/Y-cable) · depthai ROS driver on Humble.
+- **We have the chassis** (confirmed 25/11). Bring-up early (hardware check S1, bringup + first rosbag S2), so S4 is only tuning + video.
 
 ## 9. AS deliverables
 - Packages: `trash_description` (URDF ext + world), `trash_detector`, `trash_localizer`, `trash_behaviour`, `trash_bringup` (one-command launch).
@@ -204,18 +204,17 @@ Estimated cost: ~18 configs × 5 reps × ~2 min ≈ 3 h of scripted runs, **beca
 
 | Sprint | Dates | Sessions | Focus |
 |---|---|---|---|
-| S0 | 25/11–30/11 | EAI 25/11 | Define & de-risk (most issues roll into S1) |
-| S1 | 01/12–07/12 | AS 01/12 · EAI 02/12 | Finish S0 + first sim pieces + dataset v0 + model A |
-| S2 | 08/12–14/12 | AS 08/12 (BT) · EAI 09/12 (NXP lab) | FSM → BT, NN in the loop, SLAM map, harness + power |
+| S0 | 25/11–30/11 | EAI 25/11 | Desk only: spec sheets, protocol steps 1–3, model choice from docs, onboarding |
+| S1 | 01/12–07/12 | AS 01/12 · EAI 02/12 | Interfaces + robot check + first sim pieces · hands-on hello-worlds + idle power + dataset v0 + model A |
+| S2 | 08/12–14/12 | AS 08/12 (BT) · EAI 09/12 (NXP lab) | FSM → BT, NN in the loop, SLAM map, real-robot bringup · harness + power |
 | S3 | 15/12–21/12 | AS 15/12 · EAI 16/12 (ONNX RT) | Measure + sim demo: L2, Nav2, fusion, speed/energy matrix, model A on accelerators |
 | — | 22/12–04/01 | — | Break, no work |
-| S4 | 05/01–06/01 | AS 05/01 (SLAM) · EAI 06/01 (TVM) | Real robot (if chassis) + 5-rep runs + plots + results |
+| S4 | 05/01–06/01 | AS 05/01 (SLAM) · EAI 06/01 (TVM) | Real-robot tuning + video, 5-rep runs, plots, results |
 | S5 | 12/01–18/01 | AS 12/01 · EAI 13/01 | Final review & prep only: rehearsals, final PDFs, repro check |
 
 **Trims that make it fit** (first estimate ≈ 170 h → ≈ 100–110 h, my rough estimate ±30%):
 - Speed/energy across several models with **pretrained zoo models**, only model A fine-tuned (§12)
 - Dataset v0 ≈ 150 images, one input size, datasheet depth noise first
-- Real robot in S4 (the AS brief says "if time permits"), with a bench fallback
 - Every lecture covered, thin: 1 configuration or 1 experiment each
 
 **Issues:** ~1 h each, max 2 per course per person per sprint (+ an optional home issue). The full list lives on the [board](https://github.com/orgs/TrashRobotEdge/projects/1), grouped by Sprint and Category. Issues for later sprints get adjusted at each sprint start.
@@ -230,7 +229,7 @@ Estimated cost: ~18 configs × 5 reps × ~2 min ≈ 3 h of scripted runs, **beca
 ## 18. Risks & open questions
 | Risk | Mitigation |
 |---|---|
-| Chassis late / never arrives | Sim demo is the baseline; bench OAK + Pi4 for L2 |
+| Real robot fails late | Bring-up in S2, not S4; sim demo stays the baseline |
 | Gazebo too slow in VirtualBox | Test in S0; native/dual-boot fallback |
 | Model doesn't compile on Hailo-8L / OAK | Compile test in S0 picks the models |
 | ROS Humble not on Pi5 | L1 is ROS-free by design |
@@ -243,7 +242,7 @@ Estimated cost: ~18 configs × 5 reps × ~2 min ≈ 3 h of scripted runs, **beca
 | No microcontroller | micro-ROS in backlog; TinyML decided after 02/12 |
 
 **Ask the professor** (AS review 01/12, EAI review 02/12; tracked in the review-prep issues):
-- Demo 19/01: format, length, sim + video OK if no chassis? And where is our chassis?
+- Demo 19/01: format, length, sim + real, or sim + video as backup?
 - Does reusing his OAK-D Pro URDF + our extensions (camera_info, noise, pose) count as the "URDF update"?
 - BT library expected? micro-ROS without a microcontroller: is a documented design enough?
 - TinyML without a microcontroller: what's expected?
