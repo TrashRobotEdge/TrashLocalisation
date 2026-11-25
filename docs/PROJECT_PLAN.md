@@ -16,7 +16,8 @@
 | Grade | GitHub repo (packages + docs) = grade 1 · demo **19/01** = grade 2 (AS1 p.40) | Report ≤15 p + reproducible repo · PoC 15 min + 5 min Q&A on **20/01** (EA1 p.30) |
 | Repo | **TrashLocalisation** (ROS2 workspace) | **EdgeTrash** (data, models, benchmark, report) |
 
-- **Work window: 4 weeks, 25/11 → 21/12.** No work over the break. January = attend lectures + deliver only.
+- **Work: 25/11 → 06/01**, no work over the 22/12–04/01 break. **12–18/01: final review & prep.** Demo 19/01, PoC 20/01.
+- **Time:** ~2.5 h per course per week in class + 1–2 h at home per person ≈ **110 person-hours** of build time (S0–S4), + ~20 h of final prep (S5). See §16 for the trims that make the plan fit.
 - **Equipment (fixed):** OAK-D Pro (Myriad X VPU) · Pi5 + Hailo-8L (13 TOPS, INT8) · Pi4 (loose board, probably the TB3 computer running Docker `[W1]`) · inline USB-C power meter · TB3 confirmed, **chassis not received yet**.
 - **Stack:** Ubuntu 22.04, ROS2 Humble, Gazebo (gz-sim, Fortress per the workshop slides), CycloneDDS.
 - **Professor's repo** (`gerald-rocher/Turtlebot3`, checked 25/11): has `projects/turtlebot3_descriptions/urdf/turtlebot3_burger_oak_d_pro.urdf` (RGB + depth 640×480 @30 Hz, HFOV 1.047 rad, **no depth noise, no camera_info**), launched with `PROJECT_MODEL=turtlebot3_burger_oak_d_pro` + `projects_empty_world.launch.py`. Lab packages `turtlebot3_fsm`, `turtlebot3_braitenberg` (`lidar_utils.py`, `diffdrive.py`). **No behaviour tree or micro-ROS material.**
@@ -30,13 +31,13 @@
 | AS URDF/sim (01/12) | OAK-D Pro URDF extensions + can world | S1 |
 | AS Architectures/BT (08/12) | BT replaces FSM (likely BehaviorTree.CPP + Groot2, as last year) | S2 |
 | AS Braitenberg (15/12) | Approach as a Braitenberg vehicle (lab PDF already available) | S2–S3 |
-| AS SLAM/planning (05/01) | Cartographer map + Nav2 goal to the localised can (lab PDF already available) | S2–S3 |
+| AS SLAM/planning (05/01) | Cartographer map + Nav2 goal to the localised can (lab PDF already available) | S2 map · S3 Nav2 |
 | AS micro-ROS (12/01) | **Backlog**: no microcontroller, last lesson. Ask the professor whether a documented design counts | — |
 | EAI Benchmarking (25/11) | The protocol (§14) | S0–S1 |
-| EAI TinyML (02/12) | Decide after the lecture (backlog issue): no MCU, so likely a tiny model at the low end of the Pareto front | S1–S2 |
+| EAI TinyML (02/12) | Decide in the 02/12 session: no MCU, so likely a tiny model at the low end of the Pareto front | S1 |
 | EAI NXP NPU/TFLite (09/12) | Do the lab, reuse its TFLite INT8 flow, run our model on the NXP board during the lab as one extra data point | S2 |
 | EAI ONNX Runtime (16/12) | ORT rows in the matrix + ORT profiler/graph optimisations | S2–S3 |
-| EAI TVM (06/01) | TVM-compiled model on the Pi4/Pi5 CPU as one more runtime row (cross-compile on x86) | S3 |
+| EAI TVM (06/01) | TVM-compiled model on the Pi CPU as one more runtime row (cross-compile on x86) | S4 |
 
 ## 2. Audit of the v1 plan
 | # | Finding | Why it matters | Decision |
@@ -63,7 +64,7 @@
 ## 3. Scope ladder (simple first, growth paths ready)
 | Rung | Task | AS adds | EAI adds |
 |---|---|---|---|
-| **1 (MVP)** | Find and approach **Coca-Cola cans** indoors | Full loop: detect → localise → approach → stop | 2 models + HSV, full benchmark |
+| **1 (MVP)** | Find and approach **Coca-Cola cans** indoors | Full loop: detect → localise → approach → stop | Zoo models (speed/energy) + model A (accuracy) + HSV |
 | 2 | **All cans** | Nothing new (same interface) | Generalisation test. **HSV fails here, which is the honest case for using an NN** |
 | 3 | Multi-class (cans, bottles, pizza boxes) | Per-class behaviour | Multi-class mAP, bigger models, more stress on the edge devices |
 | 4 | Multi-class over a **large zone** | SLAM + Nav2 exploration, trash map | Long-run stability, energy per area covered |
@@ -140,7 +141,8 @@ OAK-D Pro (RGB+depth) ─► trash_detector ─Detection2DArray─► trash_loca
 ## 12. Model selection
 - Candidates (the professor recommends models available on every toolchain): YOLO-nano family (YOLOv8n…), SSD-MobileNetV2, MobileNetV2 backbone.
 - Criteria, in order: (1) **compiles on Hailo-8L, OAK (.blob) and CPU (ONNX/TFLite)** · (2) accuracy on our test set · (3) size/MACs. Licence ignored for now (private repos); set at the end once models are chosen.
-- S0 compile test with pretrained zoo versions decides the **2 families** we benchmark. HSV = non-NN baseline.
+- S0 compile test with pretrained zoo versions decides which family we **fine-tune (model A)**. HSV = non-NN baseline.
+- **Several models are still compared:** speed and energy depend on architecture, input size and precision, not on trained weights, so the speed/energy matrix uses **pretrained zoo models** (already compiled for Hailo/OAK). Only model A needs custom compiles (accuracy + robot). Caveat for the report: post-processing time depends on the number of detections.
 
 ## 13. Training & optimisation
 - Fine-tune pretrained COCO weights on our dataset (Colab/laptop GPU), single class for rung 1.
@@ -165,14 +167,14 @@ OAK-D Pro (RGB+depth) ─► trash_detector ─Detection2DArray─► trash_loca
 **3. Variables (valid cells only):**
 | Device | Runtime / precision | Input |
 |---|---|---|
-| Pi4 CPU | ONNX RT FP32 · TFLite FP32 · TFLite INT8 | 320, 640 |
-| Pi5 CPU | same as Pi4 (free baseline that isolates the Hailo effect) | 320, 640 |
-| Pi5 + Hailo-8L | HailoRT INT8 | 640 (+320) |
-| OAK-D Pro VPU | DepthAI FP16 | 640 (+320) |
+| Pi4 CPU | ONNX RT FP32 · TFLite FP32 · TFLite INT8 | one size (640 or the model's native) |
+| Pi5 CPU | same as Pi4 (free baseline that isolates the Hailo effect) | same |
+| Pi5 + Hailo-8L | HailoRT INT8 | same |
+| OAK-D Pro VPU | DepthAI FP16 | same |
 | Pi4 / Pi5 CPU | TVM-compiled FP32 (S3, worked ahead) | 640 |
 | Pi4 / Pi5 CPU | HSV baseline | native |
 | NXP board (09/12 lab only) | TFLite INT8 on its NPU | 640 |
-- ≈20 configs for model A. Model B only on its fixed input. One factor at a time, then cross factors.
+- Rows × the zoo models (speed/energy) + model A (accuracy). One input size, **because** time is the constraint; a second size is a stretch.
 
 **4. Metrics:** per stage (capture, pre, transfer, infer, post, decision) · pipeline latency p50/p95/p99 · sustained FPS · dropped frames · power avg/peak · energy per inference = ∫(P − P_idle)dt / N · on-device mAP · CPU % · peak RAM · temperature/throttling · load time · model size.
 - **L1** = frame read → postprocessed boxes (ROS-free, every device).
@@ -197,66 +199,26 @@ Estimated cost: ~18 configs × 5 reps × ~2 min ≈ 3 h of scripted runs, **beca
 
 # Part D: Execution
 
-## 16. Sprints (each bullet = a GitHub issue; anyone picks it up)
+## 16. Capacity, trims and sprints
+**Capacity:** one class session = 4 people × 2.5 h = 10 person-hours. Plus 1–2 h at home per person per week.
 
-> Sprint issues live on the board (https://github.com/orgs/TrashRobotEdge/projects/1). This list is the summary; S1–S3 become issues at each sprint start.
+| Sprint | Dates | Sessions | Focus |
+|---|---|---|---|
+| S0 | 25/11–30/11 | EAI 25/11 | Define & de-risk (most issues roll into S1) |
+| S1 | 01/12–07/12 | AS 01/12 · EAI 02/12 | Finish S0 + first sim pieces + dataset v0 + model A |
+| S2 | 08/12–14/12 | AS 08/12 (BT) · EAI 09/12 (NXP lab) | FSM → BT, NN in the loop, SLAM map, harness + power |
+| S3 | 15/12–21/12 | AS 15/12 · EAI 16/12 (ONNX RT) | Measure + sim demo: L2, Nav2, fusion, speed/energy matrix, model A on accelerators |
+| — | 22/12–04/01 | — | Break, no work |
+| S4 | 05/01–06/01 | AS 05/01 (SLAM) · EAI 06/01 (TVM) | Real robot (if chassis) + 5-rep runs + plots + results |
+| S5 | 12/01–18/01 | AS 12/01 · EAI 13/01 | Final review & prep only: rehearsals, final PDFs, repro check |
 
-### S0: Define & de-risk (25/11 → 30/11) · EAI review 25/11
-- [ ] Check the base works on your machine (everyone, onboarding)
-- [ ] Repo skeletons (both repos)
-- [ ] Freeze ROS interfaces (§4): topics, msgs, frames, QoS
-- [ ] Robot hardware check: chassis, Pi4 image, OAK power, depthai-ros
-- [ ] One issue per device, spec sheet + hello-world with a pretrained model: Pi4 · Pi5 + Hailo-8L · OAK-D Pro
-- [ ] Power meter spec + idle power of every device
-- [ ] Protocol steps 1–5 drafted (§14)
-- [ ] Model compile test → pick 2 families (ADR)
-- [ ] Review prep: AS 01/12 · EAI 02/12
-- **Done when:** everyone runs the sim · every device has run one inference · protocol 1–5 committed · 2 models chosen with reasons
-- Data capture moved to S1 (labelling starts there anyway).
+**Trims that make it fit** (first estimate ≈ 170 h → ≈ 100–110 h, my rough estimate ±30%):
+- Speed/energy across several models with **pretrained zoo models**, only model A fine-tuned (§12)
+- Dataset v0 ≈ 150 images, one input size, datasheet depth noise first
+- Real robot in S4 (the AS brief says "if time permits"), with a bench fallback
+- Every lecture covered, thin: 1 configuration or 1 experiment each
 
-### S1: First loop + protocol freeze (01/12 → 07/12) · AS URDF/sim, EAI TinyML + review 02/12
-- [ ] URDF extensions: camera_info, depth noise, mount pose/FOV (§5)
-- [ ] Gazebo world with cans + obstacles
-- [ ] `trash_detector` (HSV backend) + `trash_localizer` → 3D can pose in `odom`
-- [ ] FSM approach + lidar safety stop
-- [ ] QoS profiles + `cyclonedds.xml` (DDS lecture)
-- [ ] Data capture protocol + captures (OAK-D Pro: Coca-Cola, other cans, negatives)
-- [ ] Label the dataset, splits + calibration set, `data/README`
-- [ ] Fine-tune model A, record mAP. Model B started
-- [ ] `edgetrash` lib + L1 harness v1 (per-stage timers, power sync, raw CSV)
-- [ ] Depth-error measurements (§10)
-- [ ] Protocol frozen (all 8 steps), presented on 02/12
-- **Done when:** in sim, the robot approaches a can and stops · model A trained · first L1 CSV on Pi4 · protocol frozen
-
-### S2: NN in the loop + matrix (08/12 → 14/12) · AS architectures/BT, EAI NXP lab 09/12
-- [ ] NN backend in `trash_detector` (via `edgetrash`), working in sim
-- [ ] BT replaces the FSM (library per lecture)
-- [ ] Braitenberg-style approach · SLAM map of the test room (lab PDF)
-- [ ] NXP lab 09/12: run our model on the NXP NPU as one extra data point
-- [ ] TinyML: decision after the 02/12 lecture (ADR)
-- [ ] Record rosbags (sim + real if possible) → frame sequences for L1
-- [ ] Chassis bring-up if it has arrived (Pi4 + OAK, power checked)
-- [ ] INT8 quantization + calibration · `.hef` and `.blob` of both models · on-device accuracy checked
-- [ ] L1 matrix on all devices (first pass)
-- [ ] Report sections 1–4 drafted (both repos)
-- **Done when:** sim demo runs with the NN · every valid cell has ≥1 run · on-device mAP known
-
-### S3: System + freeze (15/12 → 21/12) · AS Braitenberg, EAI ONNX RT
-- [ ] L2 measurements on the robot config (real if possible, else bench Pi4 + live OAK)
-- [ ] Nav2 goal to the localised can · depth↔lidar fusion check
-- [ ] TVM row (Pi4/Pi5 CPU) · ONNX RT profiling · pruning experiment on CPU
-- [ ] Computation-graph figures (ROS graph + model graph)
-- [ ] Full matrix, 5 reps, plots (CDF, box, Pareto)
-- [ ] Results + discussion (bottlenecks, trade-offs, threats to validity)
-- [ ] One-command launch, READMEs, docs complete
-- [ ] Demo videos: sim (mandatory) + real (if possible)
-- [ ] Reproducibility check by someone who didn't write the code
-- [ ] EAI report ≥80%, AS LaTeX assembled from `docs/`, slides draft, DEMO.md tested by someone else
-- **Done when:** everything is pushed and reproducible. **Hard freeze 21/12.**
-
-### January (no new work)
-- Lectures (SLAM, TVM, micro-ROS) attended, to check that what we worked ahead matches. Differences go into the reports as discussion, not new code.
-- Before 19/01–20/01: final polish of the reports/slides, 2 rehearsals, check the demo still launches.
+**Issues:** ~1 h each, max 2 per course per person per sprint (+ an optional home issue). The full list lives on the [board](https://github.com/orgs/TrashRobotEdge/projects/1), grouped by Sprint and Category. Issues for later sprints get adjusted at each sprint start.
 
 ## 17. Working rules
 - Weekly sprint review (15 min), also used to prepare the professor's review. Notes in `docs/journal/sprint-N.md`.

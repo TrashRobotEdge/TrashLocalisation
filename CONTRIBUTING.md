@@ -6,7 +6,7 @@
 - Commits: small, imperative (`Add HSV detector node`).
 - PR description: what + **why**, and `Closes #N`. Reviews are encouraged (big PRs: someone from the other course side), not mandatory.
 - **Category** (board field): Setup · Build · Research · Decision (ends with an ADR) · Review prep (prepare a professor session) · Docs.
-- **Max 2–3 issues per person per sprint.** If it doesn't fit, it goes to the backlog.
+- **One issue ≈ 1 h, done in one sitting.** Bigger → split. **Max 2 per course per person per sprint** (+ an optional home issue). Doesn't fit → backlog.
 
 **Every decision has a written "because".**
 - Decision → ADR in `docs/decisions/` (copy `0000-template.md`, next number).
