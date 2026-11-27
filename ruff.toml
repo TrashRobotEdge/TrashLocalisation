@@ -1,0 +1,6 @@
+# Same rules as EdgeTrash, so both repos look the same.
+line-length = 140
+target-version = "py310"
+
+[lint]
+select = ["E", "F", "I", "B", "UP"]
