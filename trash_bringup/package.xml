@@ -9,6 +9,10 @@
 
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>trash_description</exec_depend>
+  <exec_depend>trash_detector</exec_depend>
+  <exec_depend>trash_localizer</exec_depend>
+  <exec_depend>trash_behaviour</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
