@@ -1,0 +1,7 @@
+trash_localizer:
+  ros__parameters:
+    hfov: 1.047        # rad, the professor's OAK-D Pro sim camera (URDF). Replaced by camera_info in #8
+    min_score: 0.25    # ignore detections below this
+    detections_topic: /trash/detections
+    depth_topic: depth_camera/image
+    target_topic: /trash/target
