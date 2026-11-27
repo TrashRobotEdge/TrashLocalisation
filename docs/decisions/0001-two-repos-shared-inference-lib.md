@@ -20,5 +20,5 @@ Option 3.
 - Each course gets a clean repo to grade. Last year's groups did the same (main repo + separate training repo).
 
 ## Consequences
-- TrashLocalisation depends on a pinned EdgeTrash version (pip install from a git tag).
+- TrashLocalisation depends on a pinned EdgeTrash commit: `EDGETRASH_PIN` in `scripts/setup.sh`, installed editable into the workspace venv (ADR 0002), so `edgetrash` finds its manifest and model folder in the checkout. (First written as "pip install from a git tag": changed 27/11, no tag needed.)
 - Interfaces between the two (`edgetrash` API) must stay stable: changes go through a PR on both sides.

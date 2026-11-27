@@ -82,7 +82,7 @@ OAK-D Pro (RGB+depth) ─► trash_detector ─Detection2DArray─► trash_loca
 - **trash_detector** (TrashLocalisation): thin ROS wrapper around `edgetrash`, backend = ROS parameter.
 - Topics: `rgb_camera/image`, `depth_camera/image`, `camera_info` (to add in sim) → `/trash/detections` (`vision_msgs/Detection2DArray`) → `/trash/target` (`geometry_msgs/PoseStamped`, frame `odom`) → `/cmd_vel`.
 - QoS: every subscription reliable + keep last 1, **because** we want the newest frame, not a queue, and best effort stalled on images in our sim (ADR 0003, `problems.md`). Deadline on detections = latency budget (#27).
-- Each repo's README links to the other. EdgeTrash pins the commit of TrashLocalisation used for L2.
+- Each repo's README links to the other. TrashLocalisation pins the EdgeTrash commit it runs (`EDGETRASH_PIN` in `scripts/setup.sh`, TL ADR 0001); L2 results in EdgeTrash record the TrashLocalisation commit they came from.
 
 ---
 
