@@ -53,7 +53,7 @@
 | 9 | Gazebo auto-labelling on the critical path | Complex, and it's sim data anyway | Hand-label real OAK-D photos. Auto-label = optional |
 | 10 | One model + "comparison" | Benchmarking models is a core requirement; not every model compiles everywhere | 2 NN families chosen by a compile test in S0 + HSV baseline |
 | 11 | Unclear where the inference code lives | Duplication across repos; EAI must reproduce without ROS | ROS-free lib in EdgeTrash, thin ROS node in TrashLocalisation |
-| 12 | DDS course not used | Default QoS queues stale frames → fake latency | `sensor_data` QoS, depth 1. Deadline QoS = runtime check of the latency requirement |
+| 12 | DDS course not used | Default QoS queues stale frames → fake latency | Keep-last-1 QoS (reliable: best effort stalled in sim, ADR 0003). Deadline QoS = runtime check of the latency requirement |
 | 13 | Robot hardware assumed | No chassis, OAK power on Pi4 unknown, Docker image unknown | Sim demo = guaranteed baseline. Robot = Pi4 + OAK on-camera inference, Pi5 + Hailo bench only |
 | 14 | Stream swaps every 1–2 sprints | Too much context switching in 4 weeks | No roles: sprints → issues → anyone picks. Learning through cross-review |
 | 15 | Report written in the last sprint | Report is due the day after the demo; AS grade 1 is the docs | EAI: LaTeX filled as we go. AS: in-code docs + markdown are the source, a short LaTeX PDF is assembled at the end (cheap if the docs are kept up) |
@@ -81,7 +81,7 @@ OAK-D Pro (RGB+depth) ─► trash_detector ─Detection2DArray─► trash_loca
 - **edgetrash** (EdgeTrash repo): pure-Python lib, no ROS. Same code for L1 bench, L2 and the robot, **because** one implementation = what we measure is what runs.
 - **trash_detector** (TrashLocalisation): thin ROS wrapper around `edgetrash`, backend = ROS parameter.
 - Topics: `rgb_camera/image`, `depth_camera/image`, `camera_info` (to add in sim) → `/trash/detections` (`vision_msgs/Detection2DArray`) → `/trash/target` (`geometry_msgs/PoseStamped`, frame `odom`) → `/cmd_vel`.
-- QoS: images `sensor_data` with depth 1, **because** we want the newest frame, not a queue. Detections reliable + deadline = latency budget.
+- QoS: every subscription reliable + keep last 1, **because** we want the newest frame, not a queue, and best effort stalled on images in our sim (ADR 0003, `problems.md`). Deadline on detections = latency budget (#27).
 - Each repo's README links to the other. EdgeTrash pins the commit of TrashLocalisation used for L2.
 
 ---
@@ -259,7 +259,7 @@ Estimated cost: ~18 configs × 5 reps × ~2 min ≈ 3 h of scripted runs, **beca
 ## 19. Explainers (what it means for us)
 - **URDF / TF2**: robot description (links, joints, sensors) / live tree of frames. We need it to turn "can at pixel (u,v) + depth" into "can at (x,y) in `odom`".
 - **gz ↔ ROS bridge**: Gazebo topics aren't ROS topics; `turtlebot3_bridge.yaml` maps them. A new sensor (camera_info) needs a sensor in the URDF **and** a bridge entry.
-- **QoS**: per-topic delivery rules. `sensor_data` (best effort, depth 1) = always the latest frame. Deadline = alarm if detections arrive too late.
+- **QoS**: per-topic delivery rules. Keep last 1 = always the latest frame. Best effort = may drop messages (it stalled on our images, ADR 0003). Deadline = alarm if detections arrive too late.
 - **FSM vs BT**: FSM = states + transitions, simple, but grows messy. BT = tree of reusable tasks, easier to extend (safety, retries). We build both and compare.
 - **rosbag record/replay**: record sensor topics once, replay identically. Same input on every device = fair comparison.
 - **Sim time vs wall time**: Gazebo has its own clock. Latency must be measured in wall time, so no `use_sim_time` in benchmarks.
