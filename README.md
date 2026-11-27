@@ -16,12 +16,20 @@ Autonomous Systems project (Université Côte d'Azur, G. Rocher). Edge AI counte
 | `trash_bringup` | One-command launch (sim / real) | ament_python |
 
 ## Install (Ubuntu 22.04, ROS2 Humble, CycloneDDS)
-1. Set up the host as in the [professor's README](https://github.com/gerald-rocher/Turtlebot3#readme) (ROS2 Humble, CycloneDDS, ROBOTIS packages, `gerald-rocher/Turtlebot3`).
-2. Clone this repo next to it and build:
+1. ROS2 Humble ([professor's README](https://github.com/gerald-rocher/Turtlebot3#readme), "Install ROS2 Humble") and `gh auth login`.
+2. Clone and run the setup script (asks for sudo once, for apt):
    ```bash
-   cd ~/ros2_ws/src && git clone git@github.com:TrashRobotEdge/TrashLocalisation.git
-   cd ~/ros2_ws && colcon build --symlink-install && source install/setup.bash
+   mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src && gh repo clone TrashRobotEdge/TrashLocalisation
+   TrashLocalisation/scripts/setup.sh   # then open a new shell
    ```
+
+`scripts/setup.sh` does the rest of the professor's setup and is safe to re-run:
+- apt: Gazebo Fortress bridge, Nav2, Cartographer, CycloneDDS, `vision_msgs`
+- ROBOTIS repos + `gerald-rocher/Turtlebot3` at pinned commits (in the script)
+- EdgeTrash at a pinned commit (`~/EdgeTrash`, or set `EDGETRASH_DIR`), installed in the venv `~/ros2_ws/.venv`, model from the `models-v1` release, checksum checked
+- `python -m colcon build`, pre-commit hooks, `~/.bashrc` lines
+
+**Why a venv:** EdgeTrash needs numpy 2, the apt `cv_bridge`/OpenCV need numpy 1 ([ADR 0002](docs/decisions/0002-ros-python-env.md)). Our nodes get the venv's python through their shebang, nothing to activate. After changing a `package.xml` or `setup.py`: `cd ~/ros2_ws && source .venv/bin/activate && python -m colcon build --symlink-install`.
 
 ## Run
 Not yet. See [DEMO.md](DEMO.md) (filled when the first loop works, S1).
