@@ -2,25 +2,26 @@ from glob import glob
 
 from setuptools import find_packages, setup
 
-package_name = 'trash_detector'
+package_name = "trash_detector"
 
 setup(
     name=package_name,
-    version='0.0.1',
-    packages=find_packages(exclude=['test']),
+    version="0.0.1",
+    packages=find_packages(exclude=["test"]),
     data_files=[
-        ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
+        ("share/" + package_name, ["package.xml"]),
+        ("share/" + package_name + "/config", glob("config/*.yaml")),
     ],
-    install_requires=['setuptools'],
+    install_requires=["setuptools"],
     zip_safe=True,
-    maintainer='TrashRobotEdge',
-    maintainer_email='trashrobotedge@users.noreply.github.com',
-    description='Detects trash in camera images.',
-    license='TODO',
+    maintainer="TrashRobotEdge",
+    maintainer_email="trashrobotedge@users.noreply.github.com",
+    description="Detects trash in camera images (edgetrash).",
+    license="TODO",
     entry_points={
-        'console_scripts': [
-            # 'node_name = trash_detector.module:main',
-        ],
+        "console_scripts": [
+            "detector = trash_detector.detector_node:main",
+        ]
     },
 )

@@ -1,1 +1,1 @@
-"""Detects trash in camera images. Thin ROS wrapper around the EdgeTrash `edgetrash` library; backend chosen by ROS parameter (hsv, onnx, tflite, hailo, oak)."""
+"""Detects trash in camera images: thin ROS wrapper around EdgeTrash's `edgetrash`, model chosen by the `variant` param."""

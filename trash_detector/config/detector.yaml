@@ -1,0 +1,6 @@
+trash_detector:
+  ros__parameters:
+    # variant: set by the launch argument (trash_bringup sim.launch.py variant:=...)
+    conf: 0.25                           # min score kept
+    image_topic: rgb_camera/image
+    detections_topic: /trash/detections
