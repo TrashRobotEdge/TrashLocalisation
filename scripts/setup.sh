@@ -14,7 +14,8 @@ case "$REPO" in
 esac
 
 # Pinned commits. Bump them on purpose, in their own commit.
-EDGETRASH_PIN=81b6204ab28feb8f3fb3b975a9e3b9a328916e67  # benchmark-kit: edgetrash lib + models/manifest.yaml
+EDGETRASH_PIN=19986b66fa12f7b4f13694974643b87335b491d3  # benchmark-kit: edgetrash lib + models/manifest.yaml
+# The pin survives only if EdgeTrash PR #46 is merged with a merge commit (a squash drops this commit)
 MODEL_RELEASE=models-v1                                  # EdgeTrash release with the ONNX file + SHA256SUMS
 SOURCES=(  # url  commit  folder in $WS/src
   "https://github.com/ROBOTIS-GIT/DynamixelSDK.git 59abd67d1f16a199cf0c8608231aee6bb63a57f3 DynamixelSDK"
