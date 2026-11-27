@@ -1,0 +1,15 @@
+# Baseline values, picked to be slow and safe, not tuned. Tuning: #15 (FSM), #16 (safety).
+trash_behaviour:
+  ros__parameters:
+    rate: 10.0            # Hz, control loop
+    target_timeout: 1.0   # s without a target -> back to search (the NN runs at a few FPS on the VM)
+    search_turn: 0.3      # rad/s while searching
+    k_turn: 1.0           # rad/s per rad of bearing error
+    k_drive: 0.5          # m/s per m of distance left
+    max_drive: 0.1        # m/s (TB3 Burger max is 0.22)
+    stop_dist: 0.3        # m from the camera: "arrived"
+    safety_dist: 0.2      # m, lidar stop. The lidar (~0.18 m high) doesn't see cans, only taller things
+    front_cone: 0.35      # rad (~20 deg) each side of straight ahead
+    target_topic: /trash/target
+    scan_topic: scan
+    cmd_vel_topic: cmd_vel
