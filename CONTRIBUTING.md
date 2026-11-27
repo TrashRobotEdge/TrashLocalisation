@@ -3,7 +3,7 @@
 **Flow:** board → pick an issue → assign yourself → Status *In Progress* → branch → PR → merge → Status *Done*.
 - Board: https://github.com/orgs/TrashRobotEdge/projects/1. **Sprint** field = S0–S3, no sprint = backlog.
 - Branch from `main`: `<issue-number>-short-name` (e.g. `12-hsv-detector`).
-- Commits: small, imperative (`Add HSV detector node`).
+- Commits: [Conventional Commits](https://www.conventionalcommits.org), `type(scope): summary`, imperative, ≤72 chars, one change each (e.g. `feat(detector): publish edgetrash detections`). Types: `feat` `fix` `docs` `refactor` `test` `chore`.
 - PR description: what + **why**, and `Closes #N`. Reviews are encouraged (big PRs: someone from the other course side), not mandatory.
 - **Category** (board field): Setup · Build · Research · Decision (ends with an ADR) · Review prep (prepare a professor session) · Docs.
 - **One issue ≈ 1 h, done in one sitting.** Bigger → split. **Max 2 per course per person per sprint** (+ an optional home issue). Doesn't fit → backlog.
